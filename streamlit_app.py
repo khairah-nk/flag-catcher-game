@@ -745,6 +745,119 @@ game_html = f"""
       50% {{ transform: scale(1.4) rotate(10deg); opacity: 1; }}
       100% {{ transform: scale(0) rotate(-15deg); opacity: 0; }}
     }}
+
+    /* Start Game Splash Overlay */
+    .start-screen-overlay {{
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 90;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }}
+    .start-screen-overlay.hidden {{
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }}
+
+    .start-screen-card {{
+      background: #FFFFFF;
+      border-radius: 36px;
+      border: 4px solid #EFE7DA;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25), 0 8px 0 #D5C9B5;
+      padding: 36px 32px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      animation: startCardPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }}
+
+    @keyframes startCardPop {{
+      0% {{ transform: scale(0.85); opacity: 0; }}
+      100% {{ transform: scale(1); opacity: 1; }}
+    }}
+
+    .btn-start-game {{
+      background: linear-gradient(180deg, #FF9100 0%, #FF6200 100%);
+      color: #FFFFFF;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: 9999px;
+      padding: 16px 48px;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #C44800, 0 15px 25px rgba(255, 98, 0, 0.35);
+      transition: all 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      animation: startBtnPulse 1.6s infinite alternate ease-in-out;
+    }}
+    .btn-start-game:hover {{
+      filter: brightness(1.06);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 0 #C44800, 0 18px 30px rgba(255, 98, 0, 0.45);
+    }}
+    .btn-start-game:active {{
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #C44800;
+    }}
+
+    @keyframes startBtnPulse {{
+      0% {{ transform: scale(1); }}
+      100% {{ transform: scale(1.05); }}
+    }}
+
+    /* Countdown Overlay */
+    .countdown-overlay {{
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 92;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }}
+    .countdown-overlay.active {{
+      opacity: 1;
+      visibility: visible;
+    }}
+
+    .countdown-number {{
+      font-size: 130px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 122, 0, 0.8);
+      line-height: 1;
+      display: inline-block;
+      animation: countdownPop 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }}
+
+    @keyframes countdownPop {{
+      0% {{ transform: scale(0.3) rotate(-15deg); opacity: 0; }}
+      50% {{ transform: scale(1.25) rotate(5deg); opacity: 1; }}
+      100% {{ transform: scale(1) rotate(0deg); opacity: 1; }}
+    }}
+
+    .countdown-subtext {{
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFE699;
+      margin-top: 14px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
+    }}
   </style>
 </head>
 <body>
@@ -848,6 +961,26 @@ game_html = f"""
       </div>
     </div>
 
+    <!-- Start Game Splash Overlay -->
+    <div class="start-screen-overlay" id="start-overlay">
+      <div class="start-screen-card">
+        <div style="font-size: 64px; margin-bottom: 8px;">{mascot_emoji}</div>
+        <h2 style="font-size: 28px; font-weight: 900; color: #1E293B; margin-bottom: 6px;">Ready to Play?</h2>
+        <p style="font-size: 15px; color: #64748B; font-weight: 600; margin-bottom: 24px; line-height: 1.4;">
+          Catch the right falling flags before they touch the ground!
+        </p>
+        <button id="btn-start" class="btn-start-game">
+          <span>START</span> 🚀
+        </button>
+      </div>
+    </div>
+
+    <!-- 3, 2, 1 Countdown Overlay -->
+    <div class="countdown-overlay" id="countdown-overlay">
+      <div class="countdown-number" id="countdown-num">3</div>
+      <div class="countdown-subtext" id="countdown-sub">Get Ready...</div>
+    </div>
+
     <!-- Pause Screen Overlay -->
     <div class="pause-overlay" id="pause-overlay">
       <div class="pause-card">
@@ -906,6 +1039,8 @@ game_html = f"""
     }};
     const MAX_LEVEL = 5;
 
+    let gameStarted = false;
+    let inCountdown = false;
     let targetCountry = null;
     let score = 0;
     let combo = 0;
@@ -914,6 +1049,12 @@ game_html = f"""
     let activeFlags = [];
     let confettiParticles = [];
     let mascotX = (viewport.clientWidth || 800) / 2;
+
+    const startOverlay = document.getElementById('start-overlay');
+    const btnStart = document.getElementById('btn-start');
+    const countdownOverlay = document.getElementById('countdown-overlay');
+    const countdownNum = document.getElementById('countdown-num');
+    const countdownSub = document.getElementById('countdown-sub');
 
     function updateLevelUI() {{
       const cfg = LEVEL_CONFIG[currentLevel] || {{ target: 50, title: 'Champion' }};
@@ -1312,9 +1453,59 @@ game_html = f"""
         activeFlags.forEach(f => f.el.remove());
         activeFlags = [];
 
-        speak(`Welcome back! Let's play Level 1!`);
-        setTimeout(pickNewTarget, 600);
+        // Restart countdown before new game!
+        gameStarted = false;
+        startCountdown();
       }});
+    }}
+
+    // Start Button & 3-2-1 Countdown Handler
+    btnStart.addEventListener('click', () => {{
+      onFirstInteraction();
+      startOverlay.classList.add('hidden');
+      startCountdown();
+    }});
+
+    function startCountdown() {{
+      inCountdown = true;
+      countdownOverlay.classList.add('active');
+
+      const steps = [
+        {{ text: '3', color: '#FF7A00', sub: 'Get Ready...', tone: 523.25 }},
+        {{ text: '2', color: '#2DA8FF', sub: 'Look at the Sky...', tone: 659.25 }},
+        {{ text: '1', color: '#FFB800', sub: 'Almost There...', tone: 783.99 }},
+        {{ text: 'GO! 🏁', color: '#58CC02', sub: 'Catch the Flags!', tone: 1046.5 }}
+      ];
+
+      function triggerStep(index) {{
+        if (index >= steps.length) {{
+          countdownOverlay.classList.remove('active');
+          inCountdown = false;
+          gameStarted = true;
+          pickNewTarget();
+          return;
+        }}
+
+        const s = steps[index];
+        countdownNum.textContent = s.text;
+        countdownNum.style.color = s.color;
+        countdownNum.style.animation = 'none';
+        void countdownNum.offsetWidth; // trigger reflow
+        countdownNum.style.animation = 'countdownPop 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        countdownSub.textContent = s.sub;
+
+        playTone(s.tone, 'triangle', index === 3 ? 0.35 : 0.22);
+
+        if (index < 3) {{
+          speak(s.text);
+        }} else {{
+          speak("Go!");
+        }}
+
+        setTimeout(() => triggerStep(index + 1), 950);
+      }}
+
+      triggerStep(0);
     }}
 
     // Audio Announcement & Interaction Unlock
@@ -1406,12 +1597,11 @@ game_html = f"""
     }});
 
     updateLevelUI();
-    pickNewTarget();
 
     // MAIN GAME LOOP (Falls downwards with gentle swaying)
     let lastSpawnTime = 0;
     function gameLoop(timestamp) {{
-      if (isPaused) {{
+      if (isPaused || !gameStarted) {{
         requestAnimationFrame(gameLoop);
         return;
       }}

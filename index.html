@@ -235,6 +235,26 @@
           <div class="mascot-avatar">🦁</div>
           <div class="mascot-basket">🧺</div>
         </div>
+
+        <!-- Start Game Splash Overlay -->
+        <div class="modal-kid-backdrop active" id="start-overlay" style="position: absolute; inset: 0; z-index: 50; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(8px);">
+          <div class="modal-kid-dialog" style="max-width: 400px; padding: 34px 24px;">
+            <div style="font-size: 64px; margin-bottom: 8px;">🦁</div>
+            <h2 class="text-kid-display" style="color: var(--kid-text-dark); margin-bottom: 6px;">Ready to Play?</h2>
+            <p style="font-size: 15px; color: var(--kid-text-body); margin-bottom: 24px; line-height: 1.4;">
+              Catch the right falling flags before they touch the ground!
+            </p>
+            <button class="btn-kid btn-kid-primary btn-kid-lg" id="btn-start" style="font-size: 24px; padding: 16px 48px;">
+              <span>START 🚀</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3, 2, 1 Countdown Overlay -->
+        <div class="countdown-overlay" id="countdown-overlay">
+          <div class="countdown-number" id="countdown-num">3</div>
+          <div class="countdown-subtext" id="countdown-sub">Get Ready...</div>
+        </div>
       </div>
     </section>
 

@@ -58,6 +58,8 @@ class FlagGame {
     this.lastSpawnTime = 0;
     this.spawnInterval = 1800; // ms
     this.isRunning = true;
+    this.gameStarted = false;
+    this.inCountdown = false;
 
     this.init();
   }
@@ -71,7 +73,6 @@ class FlagGame {
     }
 
     this.bindEvents();
-    this.setNewTargetCountry();
     this.spawnClouds();
     this.updateHeartsUI();
     this.updateProgressUI();
@@ -277,8 +278,18 @@ class FlagGame {
         this.activeFlags.forEach(f => f.el.remove());
         this.activeFlags = [];
 
-        this.speak(`Welcome back! Let's play Level 1!`);
-        setTimeout(() => this.setNewTargetCountry(), 600);
+        this.gameStarted = false;
+        this.startCountdown();
+      });
+    }
+
+    const btnStart = document.getElementById('btn-start');
+    if (btnStart) {
+      btnStart.addEventListener('click', () => {
+        if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
+        const startOverlay = document.getElementById('start-overlay');
+        if (startOverlay) startOverlay.classList.remove('active');
+        this.startCountdown();
       });
     }
 
@@ -562,6 +573,53 @@ class FlagGame {
     setTimeout(() => this.playTone(1318.5, 'sine', 0.45), 400);
   }
 
+  startCountdown() {
+    this.inCountdown = true;
+    const countdownOverlay = document.getElementById('countdown-overlay');
+    const countdownNum = document.getElementById('countdown-num');
+    const countdownSub = document.getElementById('countdown-sub');
+
+    if (countdownOverlay) countdownOverlay.classList.add('active');
+
+    const steps = [
+      { text: '3', color: '#FF7A00', sub: 'Get Ready...', tone: 523.25 },
+      { text: '2', color: '#2DA8FF', sub: 'Look at the Sky...', tone: 659.25 },
+      { text: '1', color: '#FFB800', sub: 'Almost There...', tone: 783.99 },
+      { text: 'GO! 🏁', color: '#58CC02', sub: 'Catch the Flags!', tone: 1046.5 }
+    ];
+
+    const triggerStep = (index) => {
+      if (index >= steps.length) {
+        if (countdownOverlay) countdownOverlay.classList.remove('active');
+        this.inCountdown = false;
+        this.gameStarted = true;
+        this.setNewTargetCountry();
+        return;
+      }
+
+      const s = steps[index];
+      if (countdownNum) {
+        countdownNum.textContent = s.text;
+        countdownNum.style.color = s.color;
+        countdownNum.style.animation = 'none';
+        void countdownNum.offsetWidth;
+        countdownNum.style.animation = 'countdownPop 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      }
+      if (countdownSub) countdownSub.textContent = s.sub;
+
+      this.playTone(s.tone, 'triangle', index === 3 ? 0.35 : 0.22);
+      if (index < 3) {
+        this.speak(s.text);
+      } else {
+        this.speak("Go!");
+      }
+
+      setTimeout(() => triggerStep(index + 1), 950);
+    };
+
+    triggerStep(0);
+  }
+
   playGrandFanfare() {
     const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
     notes.forEach((freq, idx) => {
@@ -622,7 +680,7 @@ class FlagGame {
 
   gameLoop(timestamp) {
     if (!this.isRunning) return;
-    if (this.isPaused) {
+    if (this.isPaused || !this.gameStarted) {
       requestAnimationFrame(this.gameLoop.bind(this));
       return;
     }
