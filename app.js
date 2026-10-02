@@ -14,15 +14,21 @@ class FlagGame {
     this.activeFlags = [];
     this.score = 0;
     this.combo = 0;
-    this.streak = 64;
-    this.lives = 3;
-    this.maxLives = 3;
     this.soundEnabled = true;
     this.selectedContinent = 'All';
     this.targetCountry = null;
-    this.levelProgress = 0;
+    this.catchesInLevel = 0;
     this.level = 1;
+    this.maxLevel = 5;
     this.mascotX = 400;
+
+    this.LEVEL_CONFIG = {
+      1: { target: 5, title: 'Novice Explorer' },
+      2: { target: 10, title: 'Sky Adventurer' },
+      3: { target: 20, title: 'Globe Trotter' },
+      4: { target: 30, title: 'Flag Master' },
+      5: { target: 50, title: 'Grand Aviator' }
+    };
 
     // DOM References
     this.arena = document.getElementById('sky-arena');
@@ -236,6 +242,46 @@ class FlagGame {
       });
     }
 
+    const btnNextLevel = document.getElementById('btn-next-level');
+    if (btnNextLevel) {
+      btnNextLevel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const levelUpModal = document.getElementById('level-up-modal');
+        if (levelUpModal) levelUpModal.classList.remove('active');
+
+        this.level++;
+        this.catchesInLevel = 0;
+        this.updateProgressUI();
+
+        this.activeFlags.forEach(f => f.el.remove());
+        this.activeFlags = [];
+
+        this.speak(`Welcome to Level ${this.level}!`);
+        setTimeout(() => this.setNewTargetCountry(), 600);
+      });
+    }
+
+    const btnPlayAgain = document.getElementById('btn-play-again');
+    if (btnPlayAgain) {
+      btnPlayAgain.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const gameWonModal = document.getElementById('game-won-modal');
+        if (gameWonModal) gameWonModal.classList.remove('active');
+
+        this.level = 1;
+        this.catchesInLevel = 0;
+        this.score = 0;
+        this.scoreDisplay.textContent = '0';
+        this.updateProgressUI();
+
+        this.activeFlags.forEach(f => f.el.remove());
+        this.activeFlags = [];
+
+        this.speak(`Welcome back! Let's play Level 1!`);
+        setTimeout(() => this.setNewTargetCountry(), 600);
+      });
+    }
+
     const editionSelect = document.getElementById('edition-select');
     if (editionSelect) {
       editionSelect.addEventListener('change', async (e) => {
@@ -446,35 +492,86 @@ class FlagGame {
       const msg = this.combo > 1 ? `+${points} (x${this.combo} 🔥)` : `+${points} ⭐`;
       this.spawnFloatingText(msg, flagObj.x, flagObj.y, '#58CC02');
 
-      this.levelProgress++;
+      this.catchesInLevel++;
       this.updateProgressUI();
 
-      if (this.levelProgress >= 5) {
-        this.levelProgress = 0;
-        this.level++;
-        this.openCountryModal(country, true);
+      const target = this.LEVEL_CONFIG[this.level]?.target || 50;
+      if (this.catchesInLevel >= target) {
+        if (this.level < this.maxLevel) {
+          // Level Completed! Advance to next level
+          setTimeout(() => this.showLevelCompleteModal(), 400);
+        } else {
+          // LEVEL 5 COMPLETED: WIN THE GAME!
+          setTimeout(() => this.showGameWonModal(), 400);
+        }
       } else {
         setTimeout(() => this.setNewTargetCountry(), 600);
       }
     } else {
       this.combo = 0;
-      this.lives = Math.max(0, this.lives - 1);
-      this.updateHeartsUI();
       this.playMissSound();
       this.spawnFloatingText(`That's ${country.name}!`, flagObj.x, flagObj.y, '#FF4757');
       this.speak(`That's ${country.name}! Find ${this.targetCountry.name}!`);
-
-      if (this.lives === 0) {
-        setTimeout(() => {
-          alert(`Game Over! Great effort! You scored ${this.score} points!`);
-          this.lives = this.maxLives;
-          this.score = 0;
-          this.scoreDisplay.textContent = '0';
-          this.updateHeartsUI();
-          this.setNewTargetCountry();
-        }, 500);
-      }
     }
+  }
+
+  showLevelCompleteModal() {
+    this.playLevelUpFanfare();
+    this.explodeConfetti(this.arena.clientWidth / 2, this.arena.clientHeight / 2);
+
+    const nextLevel = this.level + 1;
+    const nextTarget = this.LEVEL_CONFIG[nextLevel]?.target || 10;
+    const currentTarget = this.LEVEL_CONFIG[this.level]?.target || 5;
+
+    const modalTitle = document.getElementById('modal-level-title');
+    const modalDesc = document.getElementById('modal-level-desc');
+    const btnNextLevel = document.getElementById('btn-next-level');
+
+    if (modalTitle) modalTitle.textContent = `🎉 Level ${this.level} Complete!`;
+    if (modalDesc) modalDesc.innerHTML = `You caught <b>${currentTarget} flags</b> like a champion aviator!<br>Current Score: <b style="color: #FF7A00;">${this.score} PTS</b> ⭐<br><br>Ready for <b>Level ${nextLevel}</b>? Catch <b>${nextTarget} flags</b> to advance!`;
+    if (btnNextLevel) btnNextLevel.textContent = `Play Level ${nextLevel} 🚀`;
+
+    const levelUpModal = document.getElementById('level-up-modal');
+    if (levelUpModal) levelUpModal.classList.add('active');
+
+    this.speak(`Level ${this.level} complete! Fantastic job! Get ready for Level ${nextLevel}!`);
+  }
+
+  showGameWonModal() {
+    this.playGrandFanfare();
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        this.explodeConfetti(this.arena.clientWidth * (0.15 + i * 0.14), this.arena.clientHeight * 0.4);
+      }, i * 220);
+    }
+
+    const finalScoreEl = document.getElementById('final-score-val');
+    if (finalScoreEl) finalScoreEl.textContent = this.score;
+
+    const gameWonModal = document.getElementById('game-won-modal');
+    if (gameWonModal) gameWonModal.classList.add('active');
+
+    this.speak(`Congratulations! You won the game with ${this.score} points! You are the grand champion!`);
+  }
+
+  playLevelUpFanfare() {
+    this.playTone(523.25, 'triangle', 0.18);
+    setTimeout(() => this.playTone(659.25, 'triangle', 0.18), 90);
+    setTimeout(() => this.playTone(783.99, 'triangle', 0.18), 180);
+    setTimeout(() => this.playTone(1046.5, 'triangle', 0.35), 270);
+    setTimeout(() => this.playTone(1318.5, 'sine', 0.45), 400);
+  }
+
+  playGrandFanfare() {
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
+    notes.forEach((freq, idx) => {
+      setTimeout(() => this.playTone(freq, 'triangle', 0.25), idx * 80);
+    });
+    setTimeout(() => {
+      this.playTone(1046.5, 'sine', 0.7);
+      this.playTone(1318.5, 'sine', 0.7);
+      this.playTone(1567.98, 'sine', 0.7);
+    }, notes.length * 80 + 40);
   }
 
   openCountryModal(country, isLevelWin = false) {
@@ -508,9 +605,19 @@ class FlagGame {
   }
 
   updateProgressUI() {
-    if (!this.progressBar) return;
-    const pct = (this.levelProgress / 5) * 100;
-    this.progressBar.style.width = `${pct}%`;
+    const cfg = this.LEVEL_CONFIG[this.level] || { target: 50, title: 'Champion' };
+    const target = cfg.target;
+
+    const levelLabel = document.getElementById('level-label');
+    if (levelLabel) levelLabel.textContent = `Level ${this.level}: ${cfg.title}`;
+
+    const catchesStatus = document.getElementById('catches-status');
+    if (catchesStatus) catchesStatus.textContent = `${this.catchesInLevel}/${target}`;
+
+    if (this.progressBar) {
+      const pct = Math.min(100, (this.catchesInLevel / target) * 100);
+      this.progressBar.style.width = `${pct}%`;
+    }
   }
 
   gameLoop(timestamp) {

@@ -675,6 +675,11 @@ game_html = f"""
       transform: scale(1);
     }}
 
+    @keyframes bounceTrophy {{
+      0% {{ transform: translateY(0) scale(1); }}
+      100% {{ transform: translateY(-10px) scale(1.08); }}
+    }}
+
     /* Pause Screen Overlay */
     .pause-overlay {{
       position: absolute;
@@ -767,10 +772,13 @@ game_html = f"""
       </div>
     </div>
 
-    <!-- HUD Score & Combo -->
+    <!-- HUD Score, Level & Combo -->
     <div class="hud-stats">
       <div class="score-badge" id="score-badge">
         <span>⭐</span> <span id="score-num">0</span> PTS
+      </div>
+      <div class="score-badge" id="hud-level-badge" style="border-color: #D8B4FE; color: #7E22CE; background: #FAF5FF; padding: 6px 14px;">
+        <span>🚀</span> <span id="hud-level-num">Level 1</span>
       </div>
       <div class="combo-badge" id="combo-badge">
         🔥 <span id="combo-num">2</span>x COMBO!
@@ -793,23 +801,49 @@ game_html = f"""
 
     <!-- Bottom Progress Strip -->
     <div class="level-strip">
-      <span style="font-size: 13px; font-weight: 800; color: #8C52FF;">Level 1</span>
+      <span style="font-size: 13px; font-weight: 800; color: #8C52FF;" id="level-title-label">Level 1: Novice Explorer</span>
       <div class="prog-track">
-        <div class="prog-fill" id="prog-fill"></div>
+        <div class="prog-fill" id="prog-fill" style="width: 0%;"></div>
       </div>
       <span style="font-size: 12px; font-weight: 800; color: #64748B;" id="catches-num">0/5</span>
     </div>
 
-    <!-- Level Complete Celebration Modal -->
+    <!-- Level Complete Celebration Modal (Intermediate Levels) -->
     <div class="celebrate-modal" id="win-modal">
       <div class="celebrate-card">
-        <div style="font-size: 60px; margin-bottom: 8px;">🏆</div>
-        <h2 style="font-size: 26px; font-weight: 900; color: #1E293B; margin-bottom: 6px;">Level Complete!</h2>
-        <p style="font-size: 15px; color: #64748B; font-weight: 600; margin-bottom: 18px;">
-          You caught 5 world flags like a champion aviator!
+        <div style="font-size: 60px; margin-bottom: 8px;">🌟</div>
+        <h2 style="font-size: 26px; font-weight: 900; color: #1E293B; margin-bottom: 6px;" id="level-win-title">Level Complete!</h2>
+        <p style="font-size: 15px; color: #64748B; font-weight: 600; margin-bottom: 18px;" id="level-win-desc">
+          You caught 5 flags like a champion aviator!
         </p>
         <button id="btn-next-level" style="background: #FF7A00; color: #FFF; border: none; border-radius: 9999px; font-weight: 800; font-size: 17px; padding: 13px 32px; cursor: pointer; box-shadow: 0 4px 0 #E26400;">
           Play Next Level 🚀
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Won Grand Celebration Modal (Level 5 Completed) -->
+    <div class="celebrate-modal" id="game-won-modal">
+      <div class="celebrate-card" style="max-width: 440px; padding: 32px 24px;">
+        <div style="font-size: 70px; margin-bottom: 6px; display: inline-block; animation: bounceTrophy 0.9s infinite alternate ease-in-out;">🏆</div>
+        <h2 style="font-size: 28px; font-weight: 900; color: #1E293B; margin-bottom: 4px;">CONGRATULATIONS!</h2>
+        <div style="font-size: 15px; font-weight: 800; color: #8C52FF; margin-bottom: 14px; letter-spacing: 0.5px;">
+          👑 YOU WON THE GAME! 👑
+        </div>
+        <p style="font-size: 14px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 16px;">
+          Superstar! You completed all 5 levels and caught flags from around the globe!
+        </p>
+        <div style="background: linear-gradient(135deg, #FFF6E5 0%, #FFE9B8 100%); border: 3px solid #FFD066; border-radius: 20px; padding: 14px 20px; margin-bottom: 20px; box-shadow: 0 4px 14px rgba(255, 184, 0, 0.25);">
+          <div style="font-size: 12px; font-weight: 800; color: #B38600; text-transform: uppercase; letter-spacing: 1px;">FINAL SCORE</div>
+          <div style="font-size: 40px; font-weight: 900; color: #FF7A00; line-height: 1.1; margin: 4px 0;">
+            <span id="final-score-val">0</span> <span style="font-size: 20px;">PTS ⭐</span>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #64748B;">
+            All 5 Levels Completed • Flag Master Champion!
+          </div>
+        </div>
+        <button id="btn-play-again" style="background: linear-gradient(135deg, #58CC02 0%, #46A302 100%); color: #FFF; border: none; border-radius: 9999px; font-weight: 900; font-size: 18px; padding: 14px 34px; cursor: pointer; box-shadow: 0 5px 0 #327A00;">
+          Play Again 🔄
         </button>
       </div>
     </div>
@@ -857,13 +891,44 @@ game_html = f"""
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
+    // Level progression targets:
+    // Level 1: 5 catches to reach Level 2
+    // Level 2: 10 catches to reach Level 3
+    // Level 3: 20 catches to reach Level 4
+    // Level 4: 30 catches to reach Level 5
+    // Level 5: 50 catches to WIN THE GAME!
+    const LEVEL_CONFIG = {{
+      1: {{ target: 5, title: 'Novice Explorer' }},
+      2: {{ target: 10, title: 'Sky Adventurer' }},
+      3: {{ target: 20, title: 'Globe Trotter' }},
+      4: {{ target: 30, title: 'Flag Master' }},
+      5: {{ target: 50, title: 'Grand Aviator' }}
+    }};
+    const MAX_LEVEL = 5;
+
     let targetCountry = null;
     let score = 0;
     let combo = 0;
+    let currentLevel = 1;
     let catchesInLevel = 0;
     let activeFlags = [];
     let confettiParticles = [];
     let mascotX = (viewport.clientWidth || 800) / 2;
+
+    function updateLevelUI() {{
+      const cfg = LEVEL_CONFIG[currentLevel] || {{ target: 50, title: 'Champion' }};
+      const targetCatches = cfg.target;
+
+      const hudLvl = document.getElementById('hud-level-num');
+      if (hudLvl) hudLvl.textContent = `Level ${{currentLevel}}`;
+
+      const titleLabel = document.getElementById('level-title-label');
+      if (titleLabel) titleLabel.textContent = `Level ${{currentLevel}}: ${{cfg.title}}`;
+
+      catchesNum.textContent = `${{catchesInLevel}}/${{targetCatches}}`;
+      const pct = Math.min(100, (catchesInLevel / targetCatches) * 100);
+      progFill.style.width = `${{pct}}%`;
+    }}
 
     // Web Audio Synthesizer
     let audioCtx = null;
@@ -892,6 +957,26 @@ game_html = f"""
       setTimeout(() => playTone(659.25, 'triangle', 0.15), 70); // E5
       setTimeout(() => playTone(783.99, 'triangle', 0.25), 140); // G5
       setTimeout(() => playTone(1046.5, 'sine', 0.35), 210); // C6
+    }}
+
+    function playLevelUpFanfare() {{
+      playTone(523.25, 'triangle', 0.18);
+      setTimeout(() => playTone(659.25, 'triangle', 0.18), 90);
+      setTimeout(() => playTone(783.99, 'triangle', 0.18), 180);
+      setTimeout(() => playTone(1046.5, 'triangle', 0.35), 270);
+      setTimeout(() => playTone(1318.5, 'sine', 0.45), 400);
+    }}
+
+    function playGrandFanfare() {{
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
+      notes.forEach((freq, idx) => {{
+        setTimeout(() => playTone(freq, 'triangle', 0.25), idx * 80);
+      }});
+      setTimeout(() => {{
+        playTone(1046.5, 'sine', 0.7);
+        playTone(1318.5, 'sine', 0.7);
+        playTone(1567.98, 'sine', 0.7);
+      }}, notes.length * 80 + 40);
     }}
 
     function playMissSound() {{
@@ -1066,7 +1151,7 @@ game_html = f"""
         x: startX,
         baseX: startX,
         y: startY,
-        speed: fallBase + (Math.random() * 0.7 - 0.35),
+        speed: fallBase + (currentLevel - 1) * 0.18 + (Math.random() * 0.6 - 0.3),
         seed: Math.random() * 100,
         caught: false
       }};
@@ -1128,15 +1213,21 @@ game_html = f"""
 
         // Advance level progress
         catchesInLevel++;
-        progFill.style.width = `${{(catchesInLevel / 5) * 100}}%`;
-        catchesNum.textContent = `${{catchesInLevel}}/5`;
+        const currentTarget = LEVEL_CONFIG[currentLevel]?.target || 50;
+        updateLevelUI();
 
-        if (catchesInLevel >= 5) {{
-          // Level Completed!
-          setTimeout(() => {{
-            winModal.classList.add('active');
-            explodeConfetti(viewport.clientWidth / 2, viewport.clientHeight / 2);
-          }}, 400);
+        if (catchesInLevel >= currentTarget) {{
+          if (currentLevel < MAX_LEVEL) {{
+            // Level Completed! Advance to next level modal
+            setTimeout(() => {{
+              showLevelCompleteModal();
+            }}, 400);
+          }} else {{
+            // LEVEL 5 COMPLETED: WIN THE GAME!
+            setTimeout(() => {{
+              showGameWonModal();
+            }}, 400);
+          }}
         }} else {{
           // Pick next target after short pause
           setTimeout(pickNewTarget, 600);
@@ -1152,14 +1243,79 @@ game_html = f"""
       }}
     }}
 
+    function showLevelCompleteModal() {{
+      playLevelUpFanfare();
+      explodeConfetti(viewport.clientWidth / 2, viewport.clientHeight / 2);
+
+      const nextLevel = currentLevel + 1;
+      const nextTarget = LEVEL_CONFIG[nextLevel]?.target || 10;
+      const currentTarget = LEVEL_CONFIG[currentLevel]?.target || 5;
+
+      const titleEl = document.getElementById('level-win-title');
+      const descEl = document.getElementById('level-win-desc');
+      if (titleEl) titleEl.textContent = `🎉 Level ${{currentLevel}} Complete!`;
+      if (descEl) descEl.innerHTML = `You caught <b>${{currentTarget}} flags</b> like a champion aviator!<br>Current Score: <b style="color: #FF7A00;">${{score}} PTS</b> ⭐<br><br>Ready for <b>Level ${{nextLevel}}</b>? Catch <b>${{nextTarget}} flags</b> to advance!`;
+
+      btnNextLevel.textContent = `Play Level ${{nextLevel}} 🚀`;
+      winModal.classList.add('active');
+
+      speak(`Level ${{currentLevel}} complete! Fantastic job! Get ready for Level ${{nextLevel}}!`);
+    }}
+
     // Next level button
     btnNextLevel.addEventListener('click', () => {{
       winModal.classList.remove('active');
+      currentLevel++;
       catchesInLevel = 0;
-      progFill.style.width = '0%';
-      catchesNum.textContent = '0/5';
-      pickNewTarget();
+      updateLevelUI();
+
+      // Clear remaining active flags for fresh level start
+      activeFlags.forEach(f => f.el.remove());
+      activeFlags = [];
+
+      speak(`Welcome to Level ${{currentLevel}}! Catch ${{LEVEL_CONFIG[currentLevel]?.target}} flags!`);
+      setTimeout(pickNewTarget, 600);
     }});
+
+    function showGameWonModal() {{
+      playGrandFanfare();
+      // Multi-burst confetti celebration
+      for (let i = 0; i < 6; i++) {{
+        setTimeout(() => {{
+          explodeConfetti(viewport.clientWidth * (0.15 + i * 0.14), viewport.clientHeight * 0.4);
+        }}, i * 220);
+      }}
+
+      const finalScoreEl = document.getElementById('final-score-val');
+      if (finalScoreEl) finalScoreEl.textContent = score;
+
+      const wonModal = document.getElementById('game-won-modal');
+      if (wonModal) wonModal.classList.add('active');
+
+      speak(`Congratulations! You won the game with ${{score}} points! You are the grand champion!`);
+    }}
+
+    const btnPlayAgain = document.getElementById('btn-play-again');
+    if (btnPlayAgain) {{
+      btnPlayAgain.addEventListener('click', () => {{
+        const wonModal = document.getElementById('game-won-modal');
+        if (wonModal) wonModal.classList.remove('active');
+
+        // Reset game to Level 1
+        currentLevel = 1;
+        catchesInLevel = 0;
+        score = 0;
+        combo = 0;
+        scoreNum.textContent = '0';
+        updateLevelUI();
+
+        activeFlags.forEach(f => f.el.remove());
+        activeFlags = [];
+
+        speak(`Welcome back! Let's play Level 1!`);
+        setTimeout(pickNewTarget, 600);
+      }});
+    }}
 
     // Audio Announcement & Interaction Unlock
     let hasInteracted = false;
@@ -1249,6 +1405,7 @@ game_html = f"""
       mascot.style.transform = `translateX(${{mascotX - 45}}px)`;
     }});
 
+    updateLevelUI();
     pickNewTarget();
 
     // MAIN GAME LOOP (Falls downwards with gentle swaying)

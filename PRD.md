@@ -189,3 +189,11 @@ graph LR
   - 🇲🇾 **Malaysian State Flags Edition:** 17 SVG flags (13 states and 4 federal territories) with capitals and audio pronunciation.
   - 🇺🇸 **USA State Flags Edition:** 56 SVG flags (50 states + DC + US territories) with capitals and audio pronunciation.
   - **UI Refinement:** Removed non-functional static lives and streak chips from header to keep UI crisp and focused on learning.
+- [x] **Milestone 8:** 5-Level Progression & Grand Victory System:
+  - Level 1: 5 catches to reach Level 2 (Novice Explorer)
+  - Level 2: 10 catches to reach Level 3 (Sky Adventurer)
+  - Level 3: 20 catches to reach Level 4 (Globe Trotter)
+  - Level 4: 30 catches to reach Level 5 (Flag Master)
+  - Level 5: 50 catches to Win the Game (Grand Champion)
+  - **Grand Victory Congratulations Modal:** Bouncing golden trophy, fanfare, multi-burst confetti, final score display, and "Play Again" restart.
+

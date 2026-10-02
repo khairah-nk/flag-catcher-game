@@ -240,13 +240,13 @@
 
     <!-- Bottom Level Progress Bar -->
     <footer class="bottom-bar">
-      <div class="level-label">Level 1: World Explorer</div>
+      <div class="level-label" id="level-label">Level 1: Novice Explorer</div>
       <div class="level-progress-wrapper">
         <div class="progress-bar-kid">
-          <div class="progress-fill" id="level-progress" style="width: 20%;"></div>
+          <div class="progress-fill" id="level-progress" style="width: 0%;"></div>
         </div>
       </div>
-      <span style="font-weight: 800; font-size: 13px; color: #64748B;">Catch 5 to Level Up!</span>
+      <span style="font-weight: 800; font-size: 13px; color: #64748B;" id="catches-status">0/5</span>
     </footer>
 
   </main>
@@ -277,6 +277,44 @@
           <span>Continue 🚀</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Level Up Celebration Modal (Levels 1 to 4) -->
+  <div class="modal-kid-backdrop" id="level-up-modal" role="dialog" aria-modal="true">
+    <div class="modal-kid-dialog">
+      <div style="font-size: 56px; margin-bottom: 8px;">🌟</div>
+      <h2 class="text-kid-display" id="modal-level-title" style="color: var(--kid-text-dark); margin-bottom: 6px;">Level Complete!</h2>
+      <p id="modal-level-desc" style="font-size: 14px; color: var(--kid-text-body); margin-bottom: 20px; line-height: 1.5;">
+        Awesome job! You reached the next level!
+      </p>
+      <button class="btn-kid btn-kid-primary btn-kid-lg" id="btn-next-level">
+        <span>Play Next Level 🚀</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Won Grand Celebration Modal (Level 5 Completed) -->
+  <div class="modal-kid-backdrop" id="game-won-modal" role="dialog" aria-modal="true">
+    <div class="modal-kid-dialog" style="max-width: 440px;">
+      <div style="font-size: 68px; margin-bottom: 6px;">🏆</div>
+      <h2 class="text-kid-display" style="color: var(--kid-text-dark); margin-bottom: 4px;">CONGRATULATIONS!</h2>
+      <div style="font-size: 15px; font-weight: 800; color: #8C52FF; margin-bottom: 12px;">
+        👑 YOU WON THE GAME! 👑
+      </div>
+      <p style="font-size: 14px; color: var(--kid-text-body); margin-bottom: 16px;">
+        Superstar! You conquered all 5 levels and caught flags across the world!
+      </p>
+      <div style="background: #FFF6E5; border: 2px solid #FFD066; border-radius: 18px; padding: 14px 20px; margin-bottom: 20px;">
+        <div style="font-size: 12px; font-weight: 800; color: #B38600; text-transform: uppercase;">FINAL SCORE</div>
+        <div style="font-size: 38px; font-weight: 900; color: #FF7A00; line-height: 1.1; margin: 4px 0;">
+          <span id="final-score-val">0</span> <span style="font-size: 20px;">PTS ⭐</span>
+        </div>
+        <div style="font-size: 13px; font-weight: 700; color: #64748B;">All 5 Levels Completed</div>
+      </div>
+      <button class="btn-kid btn-kid-green btn-kid-lg" id="btn-play-again">
+        <span>Play Again 🔄</span>
+      </button>
     </div>
   </div>
 
