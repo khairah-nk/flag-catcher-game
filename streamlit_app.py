@@ -50,6 +50,14 @@ usa_data = game_datasets["usa"]
 
 @st.cache_data
 def load_map_data():
+    jpg_path = os.path.join(os.path.dirname(__file__), "assets", "maps", "world-map-kids.jpg")
+    if os.path.exists(jpg_path):
+        with open(jpg_path, "rb") as f:
+            return "data:image/jpeg;base64," + base64.b64encode(f.read()).decode("utf-8")
+    png_path = os.path.join(os.path.dirname(__file__), "assets", "maps", "world-map-hires.png")
+    if os.path.exists(png_path):
+        with open(png_path, "rb") as f:
+            return "data:image/png;base64," + base64.b64encode(f.read()).decode("utf-8")
     map_path = os.path.join(os.path.dirname(__file__), "assets", "maps", "kids-world-map.svg")
     with open(map_path, "rb") as f:
         return "data:image/svg+xml;base64," + base64.b64encode(f.read()).decode("utf-8")
