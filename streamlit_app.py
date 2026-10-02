@@ -292,31 +292,31 @@ game_html = f"""
       width: 100%;
       height: 640px;
       border-radius: 28px;
-      background: #C4DEEA;
+      background: #D8EEF8;
       border: 4px solid #FFFFFF;
-      box-shadow: 0 16px 36px rgba(25, 75, 120, 0.16), 0 4px 0 #A2C8D8;
+      box-shadow: 0 16px 36px rgba(25, 85, 135, 0.18), 0 4px 0 #B2D8EB;
       overflow: hidden;
       touch-action: none;
     }}
 
-    /* World Map Background Layer (Clean, No Wording, Restful Contrast) */
+    /* World Map Background Layer (Clean, Bright, No Wording) */
     .world-map-bg {{
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.65;
-      filter: brightness(0.92) contrast(0.92);
+      opacity: 0.88;
+      filter: brightness(1.04) contrast(1.02);
       pointer-events: none;
       z-index: 1;
     }}
 
-    /* Soft Calming Dimmer Overlay to eliminate glare and keep 100% focus on flags */
+    /* Subtle Light Ambient Sheen Overlay to keep focus clean and luminous */
     .map-dimmer-overlay {{
       position: absolute;
       inset: 0;
-      background: rgba(195, 222, 235, 0.28);
+      background: rgba(255, 255, 255, 0.08);
       pointer-events: none;
       z-index: 2;
     }}
