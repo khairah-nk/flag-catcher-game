@@ -1,0 +1,480 @@
+/* ==========================================================================
+   Kids Games UI Kit & Design System
+   Based on Kids Learning Game Mobile UI Kit (Figma Community)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* --- Primary: Tangerine Orange --- */
+  --kid-orange-500: #FF7A00;
+  --kid-orange-400: #FF9433;
+  --kid-orange-600: #E26400;
+  --kid-orange-100: #FFF3E6;
+
+  /* --- Secondary: Azure Blue --- */
+  --kid-blue-500: #2DA8FF;
+  --kid-blue-400: #57BDFF;
+  --kid-blue-600: #0E8BE0;
+  --kid-blue-100: #EAF5FF;
+
+  /* --- Success: Grass Green --- */
+  --kid-green-500: #58CC02;
+  --kid-green-400: #74D824;
+  --kid-green-600: #429E00;
+  --kid-green-100: #EFFCE8;
+
+  /* --- Knowledge: Violet / Purple --- */
+  --kid-purple-500: #8C52FF;
+  --kid-purple-400: #AA7BFF;
+  --kid-purple-600: #6F33E6;
+  --kid-purple-100: #F4EEFF;
+
+  /* --- Rewards: Sun Gold Yellow --- */
+  --kid-yellow-500: #FFB800;
+  --kid-yellow-400: #FFCA38;
+  --kid-yellow-600: #DB9900;
+  --kid-yellow-100: #FFF8E6;
+
+  /* --- Vitality: Heart Red --- */
+  --kid-red-500: #FF4757;
+  --kid-red-400: #FF6E7C;
+  --kid-red-600: #DC2B3B;
+  --kid-red-100: #FFEAEB;
+
+  /* --- Surfaces & Neutrals --- */
+  --kid-bg-cream: #FFFDF9;
+  --kid-bg-cream-dark: #FBF4E8;
+  --kid-card-bg: #FFFFFF;
+  --kid-card-border: #EFE6D8;
+  --kid-card-shadow: 0 10px 24px rgba(135, 105, 80, 0.08), 0 3px 0 #E2D7C5;
+
+  /* --- Text Colors --- */
+  --kid-text-dark: #1E293B;
+  --kid-text-body: #475569;
+  --kid-text-muted: #94A3B8;
+
+  /* --- Sky Stage Environment --- */
+  --kid-sky-top: #4DB3FF;
+  --kid-sky-mid: #9CE0FF;
+  --kid-sky-bottom: #E5F6FF;
+
+  /* --- Global Geometry --- */
+  --radius-pill: 9999px;
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+}
+
+/* ==========================================================================
+   Base Typography & Global Reset
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--kid-text-dark);
+  background-color: var(--kid-bg-cream);
+  min-height: 100vh;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ==========================================================================
+   Tactile 3D Chunky Buttons (The Kids Game UI Signature)
+   ========================================================================== */
+.btn-kid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  padding: 13px 26px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  text-decoration: none;
+  position: relative;
+  outline: none;
+}
+
+.btn-kid:hover {
+  filter: brightness(1.04);
+}
+
+/* Orange Hero Button */
+.btn-kid-primary {
+  background-color: var(--kid-orange-500);
+  color: #FFFFFF;
+  box-shadow: 0 5px 0 var(--kid-orange-600);
+}
+.btn-kid-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--kid-orange-600);
+}
+
+/* Sky Blue Action Button */
+.btn-kid-blue {
+  background-color: var(--kid-blue-500);
+  color: #FFFFFF;
+  box-shadow: 0 5px 0 var(--kid-blue-600);
+}
+.btn-kid-blue:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--kid-blue-600);
+}
+
+/* Grass Green Success Button */
+.btn-kid-green {
+  background-color: var(--kid-green-500);
+  color: #FFFFFF;
+  box-shadow: 0 5px 0 var(--kid-green-600);
+}
+.btn-kid-green:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--kid-green-600);
+}
+
+/* Clean White Surface Button */
+.btn-kid-white {
+  background-color: #FFFFFF;
+  color: var(--kid-text-dark);
+  border: 2px solid var(--kid-card-border);
+  box-shadow: 0 4px 0 #D8CEBE;
+}
+.btn-kid-white:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #D8CEBE;
+}
+
+/* Circular Round Icon Buttons */
+.btn-kid-icon {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  color: var(--kid-text-dark);
+  border: 2px solid var(--kid-card-border);
+  box-shadow: 0 4px 0 #D8CEBE;
+  font-size: 20px;
+}
+.btn-kid-icon:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #D8CEBE;
+}
+
+.btn-kid-lg {
+  padding: 16px 36px;
+  font-size: 19px;
+}
+
+.btn-kid-sm {
+  padding: 8px 18px;
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   Chips & Badges (Streak, Hearts, XP)
+   ========================================================================== */
+.chip-kid {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: #FFFFFF;
+  border: 2px solid var(--kid-card-border);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--kid-text-dark);
+  box-shadow: 0 3px 0 #E2D7C5;
+}
+
+.chip-streak {
+  background-color: var(--kid-orange-100);
+  border-color: #FFDEBF;
+  color: var(--kid-orange-600);
+  box-shadow: 0 3px 0 #E8BE95;
+}
+
+.chip-score {
+  background-color: var(--kid-yellow-100);
+  border-color: #FFE699;
+  color: #B57A00;
+  box-shadow: 0 3px 0 #E5C368;
+}
+
+.chip-hearts {
+  background-color: var(--kid-red-100);
+  border-color: #FFC9CE;
+  color: var(--kid-red-600);
+  box-shadow: 0 3px 0 #EAAFB6;
+}
+
+.hearts-container {
+  display: inline-flex;
+  gap: 5px;
+}
+.heart-icon {
+  font-size: 19px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.heart-icon.lost {
+  filter: grayscale(1) opacity(0.35);
+  transform: scale(0.85);
+}
+
+/* ==========================================================================
+   Kids Game Cards & Containers
+   ========================================================================== */
+.card-kid {
+  background-color: var(--kid-card-bg);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--kid-card-border);
+  box-shadow: var(--kid-card-shadow);
+  padding: 20px;
+  position: relative;
+}
+
+.card-kid-interactive {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card-kid-interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(135, 105, 80, 0.12), 0 5px 0 #D5C9B5;
+}
+.card-kid-interactive:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 12px rgba(135, 105, 80, 0.08), 0 2px 0 #D5C9B5;
+}
+
+/* Category Grid Cards (Math, Animals, Alphabet, Knowledge) */
+.card-category {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border-radius: 24px;
+  gap: 12px;
+  text-align: left;
+}
+.card-cat-orange { background-color: var(--kid-orange-100); border-color: #FFD8B3; }
+.card-cat-blue   { background-color: var(--kid-blue-100);   border-color: #C0E3FF; }
+.card-cat-green  { background-color: var(--kid-green-100);  border-color: #C8F3A8; }
+.card-cat-purple { background-color: var(--kid-purple-100); border-color: #DEC7FF; }
+
+/* ==========================================================================
+   Sky Canvas & Floating Flag Physics
+   ========================================================================== */
+.sky-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(180deg, var(--kid-sky-top) 0%, var(--kid-sky-mid) 50%, var(--kid-sky-bottom) 100%);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  box-shadow: inset 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Fluffy Animated Clouds */
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 100px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 12px rgba(45, 140, 210, 0.15));
+}
+.cloud::before, .cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+/* Floating Flag Kites */
+.floating-flag {
+  position: absolute;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  touch-action: manipulation;
+  z-index: 10;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  animation: flagBob 3s ease-in-out infinite alternate;
+}
+.floating-flag:hover {
+  transform: scale(1.08) !important;
+  filter: brightness(1.05) drop-shadow(0 14px 24px rgba(0, 0, 0, 0.22));
+}
+.floating-flag:active {
+  transform: scale(0.96) !important;
+}
+
+.flag-box {
+  width: 90px;
+  height: 66px;
+  border-radius: 16px;
+  background-color: #FFFFFF;
+  padding: 4px;
+  box-shadow: 0 8px 18px rgba(0, 40, 90, 0.18), 0 3px 0 rgba(0, 0, 0, 0.08);
+  border: 3px solid #FFFFFF;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flag-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 11px;
+  pointer-events: none;
+}
+
+.flag-name-tag {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--kid-text-dark);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Level Progress Bar (Glossy Pill)
+   ========================================================================== */
+.progress-bar-kid {
+  height: 20px;
+  background-color: #E6DFD2;
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--kid-orange-500) 0%, var(--kid-yellow-400) 100%);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 6px;
+  right: 6px;
+  height: 40%;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   Modals & Bottom Reveal Sheets
+   ========================================================================== */
+.modal-kid-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 30, 45, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-kid-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-kid-dialog {
+  background: #FFFFFF;
+  border-radius: 32px;
+  border: 3px solid var(--kid-card-border);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2), 0 6px 0 #D5C9B5;
+  width: 100%;
+  max-width: 440px;
+  padding: 28px 24px;
+  text-align: center;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-kid-backdrop.active .modal-kid-dialog {
+  transform: scale(1) translateY(0);
+}
+
+/* Sound Wave Animation for Speech */
+.sound-waves {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+}
+.sound-wave-bar {
+  width: 4px;
+  background-color: currentColor;
+  border-radius: 4px;
+  animation: waveBar 0.8s ease-in-out infinite alternate;
+}
+.sound-wave-bar:nth-child(2) { animation-delay: 0.2s; height: 18px; }
+.sound-wave-bar:nth-child(3) { animation-delay: 0.4s; height: 12px; }
+.sound-wave-bar:nth-child(4) { animation-delay: 0.1s; height: 16px; }
+
+/* ==========================================================================
+   Keyframes & Dynamic Effects
+   ========================================================================== */
+@keyframes flagBob {
+  0% { transform: translateY(0px) rotate(-1.5deg); }
+  100% { transform: translateY(-12px) rotate(1.5deg); }
+}
+
+@keyframes waveBar {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+@keyframes catchBurst {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35) rotate(10deg); opacity: 1; }
+  100% { transform: scale(0.2) rotate(-20deg); opacity: 0; }
+}
+
+@keyframes rippleRing {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 220px; height: 220px; opacity: 0; }
+}

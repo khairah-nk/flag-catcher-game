@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Catch the Flag! 🚩 Kids World Geography Game</title>
+  <meta name="description" content="A cheerful kids game where flags fall gently from the sky. Touch or catch the right flag to score points, build combos, and hear the country name pronounced!">
+  <link rel="stylesheet" href="ui-kit.css">
+  <style>
+    .app-viewport {
+      max-width: 960px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+    }
+
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Target Country Mission Banner */
+    .mission-banner {
+      background: #FFFFFF;
+      border: 2px solid var(--kid-card-border);
+      border-radius: var(--radius-lg);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 0 #E2D7C5;
+    }
+
+    .mission-target-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mission-prompt-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--kid-purple-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mission-country-name {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--kid-orange-500);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mission-target-flag {
+      width: 48px;
+      height: 34px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      border: 2px solid #FFF;
+    }
+
+    /* Sky Game Arena */
+    .game-arena-wrapper {
+      flex: 1;
+      min-height: 520px;
+      position: relative;
+    }
+
+    #sky-arena {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      border-radius: var(--radius-xl);
+      border: 4px solid #FFFFFF;
+      box-shadow: 0 16px 36px rgba(45, 120, 180, 0.22), 0 4px 0 #BCE2FF;
+      background: linear-gradient(180deg, #42A5F5 0%, #90CAF9 45%, #E3F2FD 85%, #C8E6C9 100%);
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    /* World Map Background Layer */
+    .world-map-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.94;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Pilot Mascot Catcher */
+    #pilot-mascot {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 85px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 30;
+      transition: transform 0.08s ease-out;
+    }
+
+    .mascot-avatar {
+      width: 66px;
+      height: 66px;
+      background: #FFFFFF;
+      border: 3px solid #FFFFFF;
+      border-radius: 50%;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2), 0 4px 0 #D5C9B5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    .mascot-basket {
+      font-size: 26px;
+      margin-top: -12px;
+      filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+    }
+
+    /* Bottom Level Bar */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: #FFFFFF;
+      border: 2px solid var(--kid-card-border);
+      border-radius: var(--radius-xl);
+      padding: 10px 20px;
+      box-shadow: 0 4px 0 #E2D7C5;
+    }
+
+    .level-label {
+      font-weight: 900;
+      font-size: 15px;
+      color: var(--kid-purple-500);
+      white-space: nowrap;
+    }
+
+    .level-progress-wrapper {
+      flex: 1;
+      max-width: 440px;
+    }
+
+    @media (max-width: 600px) {
+      .app-viewport { padding: 8px; gap: 8px; }
+      .mission-country-name { font-size: 18px; }
+      .header-bar { gap: 6px; }
+      .chip-kid { padding: 4px 10px; font-size: 13px; }
+      .game-arena-wrapper { min-height: 440px; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="app-viewport">
+    
+    <!-- Top Global Header -->
+    <header class="header-bar" role="banner">
+      <div class="header-left">
+        <h1 style="font-size: 22px; font-weight: 900; color: #1E293B; margin: 0; display: flex; align-items: center; gap: 6px;">
+          Catch the Flag! 🚩
+        </h1>
+        <select id="edition-select" class="chip-kid" style="font-size: 13px; font-weight: 800; cursor: pointer; outline: none; border-color: #E2D7C5; background: #FFFDF9; padding: 4px 10px;" aria-label="Select Game Edition">
+          <option value="countries">🌍 World Flags (271)</option>
+          <option value="malaysia">🇲🇾 Malaysian States (17)</option>
+          <option value="usa">🇺🇸 USA States (56)</option>
+        </select>
+      </div>
+
+      <div class="header-right">
+        <div class="chip-kid chip-score" title="XP Points">
+          <span>⭐</span> <span id="score-display">0</span> PTS
+        </div>
+        <button class="btn-kid-icon" id="sound-toggle" aria-label="Toggle Sound">🔊</button>
+      </div>
+    </header>
+
+    <!-- Target Country Prompt Card -->
+    <section class="mission-banner" id="mission-card" aria-live="polite">
+      <div class="mission-target-info">
+        <img id="target-flag-thumb" class="mission-target-flag" src="assets/flags/jp.svg" alt="Target Flag" />
+        <div>
+          <div class="mission-prompt-title">FIND &amp; CATCH</div>
+          <div class="mission-country-name">
+            <span id="target-country-name">Japan</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-kid btn-kid-blue btn-kid-sm" id="prompt-speaker-btn" aria-label="Hear Target Country">
+          <span>🔊 Say Target</span>
+        </button>
+        <button class="btn-kid btn-kid-white btn-kid-sm" id="pause-game-btn" aria-label="Pause Game">
+          <span id="pause-text">⏸️ Pause</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Interactive Falling Flag Sky Arena -->
+    <section class="game-arena-wrapper" aria-label="Sky Playing Area">
+      <div class="sky-container" id="sky-arena">
+        <!-- World Map Background (Kids UI Kit Color Profile) -->
+        <img src="assets/maps/kids-world-map.svg" class="world-map-bg" alt="Kids World Map" />
+
+        <!-- Floating mascot pilot with basket -->
+        <div id="pilot-mascot" title="Pilot Mascot">
+          <div class="mascot-avatar">🦁</div>
+          <div class="mascot-basket">🧺</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Level Progress Bar -->
+    <footer class="bottom-bar">
+      <div class="level-label">Level 1: World Explorer</div>
+      <div class="level-progress-wrapper">
+        <div class="progress-bar-kid">
+          <div class="progress-fill" id="level-progress" style="width: 20%;"></div>
+        </div>
+      </div>
+      <span style="font-weight: 800; font-size: 13px; color: #64748B;">Catch 5 to Level Up!</span>
+    </footer>
+
+  </main>
+
+  <!-- Educational Country Reveal Modal -->
+  <div class="modal-kid-backdrop" id="country-modal" role="dialog" aria-modal="true" aria-labelledby="modal-country-name">
+    <div class="modal-kid-dialog">
+      <div style="margin-bottom: 14px;">
+        <img id="modal-flag-img" src="" alt="Flag" style="width: 170px; height: 115px; border-radius: 16px; object-fit: cover; box-shadow: 0 10px 24px rgba(0,0,0,0.18); border: 4px solid #FFF;" />
+      </div>
+
+      <h2 id="modal-country-name" class="text-kid-display" style="color: var(--kid-text-dark); margin-bottom: 8px;">Japan</h2>
+      
+      <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+        <span class="chip-kid" id="modal-capital" style="font-size: 13px;">Tokyo</span>
+        <span class="chip-kid" id="modal-continent" style="font-size: 13px; background: var(--kid-purple-100); color: var(--kid-purple-600); border-color: #DBC5FF;">Asia</span>
+      </div>
+
+      <p id="modal-fun-fact" style="font-size: 14px; color: var(--kid-text-body); margin-bottom: 20px; line-height: 1.4;">
+        Great job finding this flag!
+      </p>
+
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn-kid btn-kid-white" id="listen-again-btn">
+          <span>🔊 Listen Again</span>
+        </button>
+        <button class="btn-kid btn-kid-primary" id="continue-btn">
+          <span>Continue 🚀</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pause Modal Overlay -->
+  <div class="modal-kid-backdrop" id="pause-modal" role="dialog" aria-modal="true">
+    <div class="modal-kid-dialog">
+      <div style="font-size: 52px; margin-bottom: 10px;">⏸️</div>
+      <h2 class="text-kid-display" style="color: var(--kid-text-dark); margin-bottom: 8px;">Game Paused</h2>
+      <p style="font-size: 15px; color: var(--kid-text-body); margin-bottom: 22px;">
+        Take your time! Whenever you're ready, let's catch more flags!
+      </p>
+      <button class="btn-kid btn-kid-green btn-kid-lg" id="resume-btn">
+        <span>▶️ Resume Playing</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
