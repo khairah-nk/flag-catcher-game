@@ -50,6 +50,10 @@ usa_data = game_datasets["usa"]
 
 @st.cache_data
 def load_map_data():
+    clean_path = os.path.join(os.path.dirname(__file__), "assets", "maps", "world-map-clean.jpg")
+    if os.path.exists(clean_path):
+        with open(clean_path, "rb") as f:
+            return "data:image/jpeg;base64," + base64.b64encode(f.read()).decode("utf-8")
     jpg_path = os.path.join(os.path.dirname(__file__), "assets", "maps", "world-map-kids.jpg")
     if os.path.exists(jpg_path):
         with open(jpg_path, "rb") as f:
@@ -288,23 +292,33 @@ game_html = f"""
       width: 100%;
       height: 640px;
       border-radius: 28px;
-      background: #D1E9F7;
+      background: #C4DEEA;
       border: 4px solid #FFFFFF;
-      box-shadow: 0 16px 36px rgba(25, 75, 120, 0.18), 0 4px 0 #B5D4E8;
+      box-shadow: 0 16px 36px rgba(25, 75, 120, 0.16), 0 4px 0 #A2C8D8;
       overflow: hidden;
       touch-action: none;
     }}
 
-    /* World Map Background Layer (Directly from assets/maps/) */
+    /* World Map Background Layer (Clean, No Wording, Restful Contrast) */
     .world-map-bg {{
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      opacity: 1;
+      object-fit: cover;
+      opacity: 0.65;
+      filter: brightness(0.92) contrast(0.92);
       pointer-events: none;
       z-index: 1;
+    }}
+
+    /* Soft Calming Dimmer Overlay to eliminate glare and keep 100% focus on flags */
+    .map-dimmer-overlay {{
+      position: absolute;
+      inset: 0;
+      background: rgba(195, 222, 235, 0.28);
+      pointer-events: none;
+      z-index: 2;
     }}
 
     /* Top Mission Header */
@@ -864,8 +878,9 @@ game_html = f"""
 <body>
   <div class="game-viewport" id="viewport">
     
-    <!-- World Map Background (Matching Kids Games UI Color Profile) -->
-    <img src="{world_map_uri}" class="world-map-bg" alt="Kids World Map" />
+    <!-- Clean World Map Background (No Wording, Dimmed for Clear Flag Focus) -->
+    <img src="{world_map_uri}" class="world-map-bg" alt="World Map Background" />
+    <div class="map-dimmer-overlay"></div>
 
     <!-- Top Mission Target -->
     <div class="mission-header">

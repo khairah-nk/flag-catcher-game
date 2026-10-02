@@ -88,23 +88,33 @@
       min-height: 520px;
       border-radius: var(--radius-xl);
       border: 4px solid #FFFFFF;
-      box-shadow: 0 16px 36px rgba(25, 75, 120, 0.18), 0 4px 0 #B5D4E8;
-      background: #D1E9F7;
+      box-shadow: 0 16px 36px rgba(25, 75, 120, 0.16), 0 4px 0 #A2C8D8;
+      background: #C4DEEA;
       position: relative;
       overflow: hidden;
       touch-action: none;
     }
 
-    /* World Map Background Layer (Directly from assets/maps/) */
+    /* World Map Background Layer (Clean, No Wording, Restful Contrast) */
     .world-map-bg {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      opacity: 1;
+      object-fit: cover;
+      opacity: 0.65;
+      filter: brightness(0.92) contrast(0.92);
       pointer-events: none;
       z-index: 1;
+    }
+
+    /* Soft Calming Dimmer Overlay to eliminate glare and keep 100% focus on flags */
+    .map-dimmer-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(195, 222, 235, 0.28);
+      pointer-events: none;
+      z-index: 2;
     }
 
     /* Pilot Mascot Catcher */
@@ -227,8 +237,9 @@
     <!-- Interactive Falling Flag Sky Arena -->
     <section class="game-arena-wrapper" aria-label="Sky Playing Area">
       <div class="sky-container" id="sky-arena">
-        <!-- World Map Background (Kids UI Kit Color Profile) -->
-        <img src="assets/maps/world-map-kids.jpg" class="world-map-bg" alt="Kids World Map" />
+        <!-- Clean World Map Background (No Wording, Dimmed for Clear Flag Focus) -->
+        <img src="assets/maps/world-map-clean.jpg" class="world-map-bg" alt="World Map Background" />
+        <div class="map-dimmer-overlay"></div>
 
         <!-- Floating mascot pilot with basket -->
         <div id="pilot-mascot" title="Pilot Mascot">
