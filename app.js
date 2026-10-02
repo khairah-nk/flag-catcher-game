@@ -73,7 +73,7 @@ class FlagGame {
     }
 
     this.bindEvents();
-    this.spawnClouds();
+    // World map background loaded from assets
     this.updateHeartsUI();
     this.updateProgressUI();
 
@@ -365,20 +365,7 @@ class FlagGame {
     }, 300);
   }
 
-  spawnClouds() {
-    for (let i = 0; i < 4; i++) {
-      const cloud = document.createElement('div');
-      cloud.className = 'cloud';
-      const width = 120 + Math.random() * 80;
-      const height = 48 + Math.random() * 25;
-      cloud.style.width = `${width}px`;
-      cloud.style.height = `${height}px`;
-      cloud.style.top = `${40 + Math.random() * 200}px`;
-      cloud.style.left = `${Math.random() * 80}%`;
-      cloud.style.opacity = (0.5 + Math.random() * 0.4).toFixed(2);
-      this.arena.appendChild(cloud);
-    }
-  }
+  // Clouds removed for clean world map background
 
   explodeConfetti(x, y) {
     const colors = ['#FF7A00', '#2DA8FF', '#58CC02', '#FFB800', '#FF4757', '#8C52FF'];

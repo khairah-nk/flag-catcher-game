@@ -280,23 +280,23 @@ game_html = f"""
       width: 100%;
       height: 640px;
       border-radius: 28px;
-      background: linear-gradient(180deg, #42A5F5 0%, #90CAF9 45%, #E3F2FD 85%, #C8E6C9 100%);
+      background: #D1E9F7;
       border: 4px solid #FFFFFF;
-      box-shadow: 0 16px 36px rgba(30, 110, 180, 0.22), 0 4px 0 #90CAF9;
+      box-shadow: 0 16px 36px rgba(25, 75, 120, 0.18), 0 4px 0 #B5D4E8;
       overflow: hidden;
       touch-action: none;
     }}
 
-    /* World Map Background Layer */
+    /* World Map Background Layer (Directly from assets/maps/) */
     .world-map-bg {{
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      opacity: 0.94;
+      object-fit: contain;
+      opacity: 1;
       pointer-events: none;
-      z-index: 2;
+      z-index: 1;
     }}
 
     /* Top Mission Header */
@@ -472,14 +472,7 @@ game_html = f"""
       transform: scale(1);
     }}
 
-    /* Drifting Clouds in Sky */
-    .cloud {{
-      position: absolute;
-      background: rgba(255, 255, 255, 0.88);
-      border-radius: 100px;
-      pointer-events: none;
-      filter: drop-shadow(0 6px 12px rgba(45, 120, 190, 0.12));
-    }}
+    /* Clean Map Environment (Sky and clouds removed) */
 
     /* FALLING FLAGS: Pure 3D Squishy Kids UI Style */
     .falling-flag {{
@@ -1032,7 +1025,7 @@ game_html = f"""
     // Level 5: 50 catches to WIN THE GAME!
     const LEVEL_CONFIG = {{
       1: {{ target: 5, title: 'Novice Explorer' }},
-      2: {{ target: 10, title: 'Sky Adventurer' }},
+      2: {{ target: 10, title: 'Globe Navigator' }},
       3: {{ target: 20, title: 'Globe Trotter' }},
       4: {{ target: 30, title: 'Flag Master' }},
       5: {{ target: 50, title: 'Grand Aviator' }}
@@ -1208,18 +1201,7 @@ game_html = f"""
       announceTarget();
     }}
 
-    // Spawn 4 decorative fluffy clouds floating gently above the map
-    for (let i = 0; i < 4; i++) {{
-      const c = document.createElement('div');
-      c.className = 'cloud';
-      c.style.width = `${{110 + Math.random() * 70}}px`;
-      c.style.height = `${{45 + Math.random() * 20}}px`;
-      c.style.top = `${{70 + Math.random() * 220}}px`;
-      c.style.left = `${{Math.random() * 80}}%`;
-      c.style.opacity = (0.35 + Math.random() * 0.25).toFixed(2);
-      c.style.zIndex = '8';
-      viewport.appendChild(c);
-    }}
+    // Map arena initialized without clouds or sky
 
     // Confetti explosion
     function explodeConfetti(x, y) {{
@@ -1472,7 +1454,7 @@ game_html = f"""
 
       const steps = [
         {{ text: '3', color: '#FF7A00', sub: 'Get Ready...', tone: 523.25 }},
-        {{ text: '2', color: '#2DA8FF', sub: 'Look at the Sky...', tone: 659.25 }},
+        {{ text: '2', color: '#2DA8FF', sub: 'Watch the Map...', tone: 659.25 }},
         {{ text: '1', color: '#FFB800', sub: 'Almost There...', tone: 783.99 }},
         {{ text: 'GO! 🏁', color: '#58CC02', sub: 'Catch the Flags!', tone: 1046.5 }}
       ];
@@ -1637,7 +1619,7 @@ game_html = f"""
           }}
         }}
 
-        // If fell past bottom of sky
+        // If fell past bottom of arena
         if (f.y > vpHeight + 30) {{
           f.el.remove();
           activeFlags.splice(i, 1);
